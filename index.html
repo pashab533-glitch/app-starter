@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1A237E">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="پاپلی خلعتبری">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>هنرستان پاپلی خلعتبری</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap');
+
+  :root {
+    --primary: #1A237E;
+    --primary-light: #3949AB;
+    --accent: #F9A825;
+    --accent-dark: #B8860B;
+    --bg: #F0F2FA;
+    --surface: #FFFFFF;
+    --text: #1A1A2E;
+    --text-sec: #5C6BC0;
+    --text-muted: #9E9E9E;
+    --border: #E3E6F0;
+    --success: #2E7D32;
+    --error: #C62828;
+    --info: #01579B;
+    --warn: #E65100;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    height: 100dvh;
+    overflow: hidden;
+    direction: rtl;
+  }
+
+  #app { height: 100dvh; display: flex; flex-direction: column; }
+
+  /* ===== SCREENS ===== */
+  .screen { flex: 1; display: none; flex-direction: column; overflow: hidden; }
+  .screen.active { display: flex; }
+
+  .screen-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 80px; }
+
+  /* ===== HEADER ===== */
+  .header {
+    background: var(--primary);
+    padding: calc(var(--safe-top) + 44px) 16px 24px;
+    border-radius: 0 0 24px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -40px; left: -40px;
+    width: 160px; height: 160px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -20px; right: -20px;
+    width: 100px; height: 100px;
+    background: rgba(249,168,37,0.12);
+    border-radius: 50%;
+  }
+  .header-title { color: #fff; font-size: 24px; font-weight: 800; position: relative; z-index: 1; }
+  .header-sub { color: var(--accent); font-size: 13px; margin-top: 4px; position: relative; z-index: 1; }
+
+  /* ===== HOME HEADER ===== */
+  .home-header {
+    background: linear-gradient(135deg, var(--primary) 0%, #283593 100%);
+    padding: calc(var(--safe-top) + 44px) 16px 20px;
+    border-radius: 0 0 28px 28px;
+  }
+  .home-header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+  .greeting { color: var(--accent); font-size: 12px; font-weight: 600; }
+  .student-name { color: #fff; font-size: 20px; font-weight: 800; margin-top: 2px; }
+  .notif-btn { position: relative; width: 40px; height: 40px; background: rgba(255,255,255,0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; border: none; }
+  .notif-badge { position: absolute; top: 4px; right: 4px; background: var(--error); color: #fff; font-size: 9px; font-weight: 700; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--primary); }
+  .school-badge { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.1); border-radius: 14px; padding: 10px 12px; }
+  .school-badge-icon { font-size: 26px; }
+  .school-badge-name { color: #fff; font-size: 14px; font-weight: 700; }
+  .school-badge-class { color: var(--accent); font-size: 12px; margin-top: 1px; }
+
+  /* ===== SECTION ===== */
+  .section-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 16px 8px; }
+  .section-title { font-size: 16px; font-weight: 800; color: var(--text); }
+  .see-all { font-size: 12px; color: var(--primary-light); font-weight: 600; cursor: pointer; background: none; border: none; }
+
+  /* ===== QUICK ACTIONS ===== */
+  .quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 16px; }
+  .quick-card {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    border: none;
+    border-top: 3px solid transparent;
+    box-shadow: 0 2px 8px rgba(26,35,126,0.08);
+    transition: transform 0.15s, box-shadow 0.15s;
+    text-decoration: none;
+  }
+  .quick-card:active { transform: scale(0.97); box-shadow: 0 1px 4px rgba(26,35,126,0.1); }
+  .quick-icon-wrap { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .quick-icon { font-size: 26px; }
+  .quick-label { font-size: 13px; font-weight: 700; color: var(--text); }
+
+  /* ===== ANNOUNCEMENT CARD ===== */
+  .ann-card {
+    background: var(--surface);
+    border-radius: 14px;
+    margin: 0 16px 10px;
+    overflow: hidden;
+    display: flex;
+    box-shadow: 0 2px 8px rgba(26,35,126,0.07);
+    cursor: pointer;
+    border: none;
+    width: calc(100% - 32px);
+    text-align: right;
+    transition: transform 0.15s;
+  }
+  .ann-card:active { transform: scale(0.99); }
+  .ann-left { width: 60px; display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; }
+  .ann-body { flex: 1; padding: 10px 10px 10px 0; }
+  .ann-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .ann-badge { border-radius: 6px; padding: 2px 8px; font-size: 10px; font-weight: 700; }
+  .ann-date { font-size: 10px; color: var(--text-muted); }
+  .ann-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .ann-preview { font-size: 12px; color: var(--text-sec); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+  /* ===== STATS ROW ===== */
+  .stats-row { display: flex; gap: 10px; padding: 0 16px 16px; }
+  .stat-card { flex: 1; border-radius: 14px; padding: 12px 8px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .stat-emoji { font-size: 22px; }
+  .stat-val { font-size: 16px; font-weight: 800; }
+  .stat-lbl { font-size: 10px; color: var(--text-muted); text-align: center; }
+
+  /* ===== SCHEDULE ===== */
+  .day-picker { display: flex; gap: 8px; padding: 10px 16px; overflow-x: auto; background: var(--surface); box-shadow: 0 2px 8px rgba(26,35,126,0.06); scrollbar-width: none; }
+  .day-picker::-webkit-scrollbar { display: none; }
+  .day-btn { padding: 8px 16px; border-radius: 20px; border: none; background: var(--bg); color: var(--text-muted); font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+  .day-btn.active { background: var(--primary); color: #fff; }
+  .schedule-day-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px 8px; }
+  .schedule-day-title { font-size: 15px; font-weight: 700; }
+  .class-count { font-size: 12px; color: var(--text-muted); }
+  .class-card {
+    background: var(--surface);
+    border-radius: 14px;
+    margin: 0 16px 10px;
+    display: flex;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(26,35,126,0.07);
+    border-right: 4px solid transparent;
+  }
+  .class-time { width: 68px; padding: 12px 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; flex-shrink: 0; }
+  .time-text { font-size: 11px; font-weight: 700; text-align: center; }
+  .time-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .class-info { flex: 1; padding: 12px 10px; }
+  .class-subject { font-size: 14px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+  .class-meta { font-size: 11px; color: var(--text-muted); line-height: 1.8; }
+  .period-num { width: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .period-n { font-size: 20px; font-weight: 900; }
+  .period-l { font-size: 9px; }
+  .schedule-summary { background: rgba(26,35,126,0.06); border: 1px solid rgba(26,35,126,0.12); border-radius: 14px; margin: 0 16px 16px; padding: 14px 16px; }
+  .summary-title { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 10px; }
+  .summary-stats { display: flex; justify-content: space-around; }
+  .sum-item { text-align: center; }
+  .sum-val { font-size: 18px; font-weight: 800; color: var(--primary); }
+  .sum-lbl { font-size: 10px; color: var(--text-muted); }
+  .sum-divider { width: 1px; background: var(--border); }
+
+  /* ===== GRADES ===== */
+  .term-picker { display: flex; gap: 8px; padding: 10px 16px; background: var(--surface); box-shadow: 0 2px 8px rgba(26,35,126,0.06); }
+  .term-btn { flex: 1; padding: 10px; border-radius: 12px; border: none; background: var(--bg); color: var(--text-muted); font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+  .term-btn.active { background: var(--success); color: #fff; }
+  .avg-card { background: var(--surface); border-radius: 16px; margin: 12px 16px; padding: 16px; display: flex; align-items: center; border: 2px solid; box-shadow: 0 4px 16px rgba(26,35,126,0.1); }
+  .avg-left { flex: 1; text-align: center; }
+  .avg-label { font-size: 12px; color: var(--text-muted); }
+  .avg-value { font-size: 48px; font-weight: 900; line-height: 1; margin: 4px 0; }
+  .avg-max { font-size: 12px; color: var(--text-muted); }
+  .avg-right { flex: 1; display: flex; justify-content: space-around; }
+  .avg-stat { text-align: center; }
+  .avg-stat-val { font-size: 20px; font-weight: 800; }
+  .avg-stat-lbl { font-size: 10px; color: var(--text-muted); }
+  .grade-card {
+    background: var(--surface);
+    border-radius: 14px;
+    margin: 0 16px 10px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 2px 8px rgba(26,35,126,0.07);
+  }
+  .grade-circle { width: 52px; height: 52px; border-radius: 50%; border: 2.5px solid; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .grade-num { font-size: 16px; font-weight: 900; }
+  .grade-center { flex: 1; }
+  .grade-subject { font-size: 14px; font-weight: 800; color: var(--text); }
+  .grade-teacher { font-size: 11px; color: var(--text-muted); margin: 2px 0 4px; }
+  .grade-bar-track { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .grade-bar-fill { height: 100%; border-radius: 2px; transition: width 0.8s ease; }
+  .grade-badge { border-radius: 8px; padding: 4px 10px; flex-shrink: 0; }
+  .grade-badge-text { font-size: 11px; font-weight: 700; }
+  .legend-card { background: var(--surface); border-radius: 14px; margin: 0 16px 16px; padding: 14px; box-shadow: 0 2px 8px rgba(26,35,126,0.06); }
+  .legend-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+  .legend-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .legend-text { font-size: 11px; color: var(--text-sec); }
+
+  /* ===== MESSAGES ===== */
+  .msg-tabs { display: flex; gap: 8px; padding: 10px 16px; background: var(--surface); box-shadow: 0 2px 8px rgba(26,35,126,0.06); }
+  .msg-tab { flex: 1; padding: 10px; border-radius: 12px; border: none; background: var(--bg); color: var(--text-muted); font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; }
+  .msg-tab.active { background: #B8860B; color: #fff; }
+  .msg-unread-badge { background: var(--error); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px; }
+  .msg-item { background: var(--surface); border-radius: 14px; margin: 0 16px 10px; padding: 12px; display: flex; gap: 12px; cursor: pointer; border: none; width: calc(100% - 32px); text-align: right; box-shadow: 0 2px 8px rgba(26,35,126,0.07); transition: transform 0.15s; }
+  .msg-item:active { transform: scale(0.99); }
+  .msg-item.unread { border-right: 4px solid #B8860B; }
+  .msg-avatar-wrap { position: relative; flex-shrink: 0; }
+  .msg-avatar { font-size: 36px; line-height: 1; }
+  .msg-unread-dot { position: absolute; top: 0; right: 0; width: 10px; height: 10px; background: #B8860B; border-radius: 50%; border: 2px solid #fff; }
+  .msg-content { flex: 1; overflow: hidden; }
+  .msg-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
+  .msg-sender { font-size: 14px; font-weight: 700; color: var(--text); }
+  .msg-date { font-size: 10px; color: var(--text-muted); }
+  .msg-subject { font-size: 13px; color: var(--text-sec); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .msg-subject.bold { font-weight: 700; color: var(--text); }
+  .msg-preview { font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .teacher-row { background: var(--surface); border-radius: 14px; margin: 0 16px 10px; padding: 12px; display: flex; align-items: center; gap: 12px; cursor: pointer; border: none; width: calc(100% - 32px); box-shadow: 0 2px 8px rgba(26,35,126,0.07); transition: transform 0.15s; }
+  .teacher-row:active { transform: scale(0.99); }
+  .teacher-avatar { width: 48px; height: 48px; border-radius: 24px; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; }
+  .teacher-info { flex: 1; text-align: right; }
+  .teacher-name { font-size: 14px; font-weight: 700; color: var(--text); }
+  .teacher-subj { font-size: 12px; color: var(--text-muted); }
+  .status-badge { display: flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px; flex-shrink: 0; }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .status-text { font-size: 11px; font-weight: 600; }
+  .helper-text { text-align: center; font-size: 12px; color: var(--text-muted); padding: 8px 16px 12px; }
+
+  /* ===== CHAT ===== */
+  .chat-view { flex: 1; display: none; flex-direction: column; }
+  .chat-view.open { display: flex; }
+  .chat-header { background: var(--surface); padding: calc(var(--safe-top) + 44px) 16px 14px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 8px rgba(26,35,126,0.08); }
+  .back-btn { background: var(--bg); border: none; width: 36px; height: 36px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; flex-shrink: 0; }
+  .chat-teacher-info { flex: 1; display: flex; align-items: center; gap: 10px; }
+  .chat-avatar { font-size: 32px; }
+  .chat-name { font-size: 15px; font-weight: 700; color: var(--text); }
+  .chat-subj { font-size: 12px; color: var(--text-muted); }
+  .online-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .chat-messages { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 16px; display: flex; flex-direction: column; gap: 10px; background: var(--bg); }
+  .bubble { max-width: 75%; padding: 10px 14px; border-radius: 16px; line-height: 1.6; font-size: 14px; }
+  .bubble-student { align-self: flex-end; background: var(--primary); color: #fff; border-bottom-right-radius: 4px; }
+  .bubble-teacher { align-self: flex-start; background: var(--surface); color: var(--text); border-bottom-left-radius: 4px; box-shadow: 0 2px 6px rgba(26,35,126,0.08); }
+  .bubble-time { font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 4px; }
+  .bubble-teacher .bubble-time { color: var(--text-muted); }
+  .chat-input-row { display: flex; gap: 8px; padding: 10px 16px calc(var(--safe-bottom) + 10px); background: var(--surface); box-shadow: 0 -2px 8px rgba(26,35,126,0.06); }
+  .chat-input { flex: 1; border: 1.5px solid var(--border); border-radius: 14px; padding: 10px 14px; font-family: inherit; font-size: 14px; color: var(--text); direction: rtl; resize: none; outline: none; transition: border-color 0.2s; }
+  .chat-input:focus { border-color: var(--primary-light); }
+  .send-btn { background: var(--accent); border: none; border-radius: 12px; padding: 10px 16px; color: var(--text); font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+  .send-btn:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; }
+
+  /* ===== ANNOUNCEMENTS ===== */
+  .filter-bar { display: flex; gap: 8px; padding: 10px 16px; overflow-x: auto; background: var(--surface); box-shadow: 0 2px 8px rgba(26,35,126,0.06); scrollbar-width: none; }
+  .filter-bar::-webkit-scrollbar { display: none; }
+  .filter-chip { padding: 8px 16px; border-radius: 20px; border: 1.5px solid var(--border); background: var(--surface); color: var(--text-muted); font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+  .filter-chip.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+  .ann-detail-card { background: var(--surface); border-radius: 20px 20px 0 0; padding: 24px 20px calc(var(--safe-bottom) + 24px); display: flex; flex-direction: column; align-items: center; }
+  .ann-detail-icon-wrap { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; margin-bottom: 12px; }
+  .ann-detail-title { font-size: 18px; font-weight: 800; color: var(--text); text-align: center; margin-bottom: 6px; }
+  .ann-detail-date { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
+  .ann-detail-body { font-size: 14px; color: var(--text-sec); line-height: 1.9; text-align: right; width: 100%; margin-bottom: 24px; }
+  .ann-close-btn { background: var(--primary); color: #fff; border: none; border-radius: 24px; padding: 12px 40px; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer; }
+
+  /* ===== PROFILE ===== */
+  .profile-header { background: var(--primary); padding: calc(var(--safe-top) + 44px) 16px 32px; display: flex; flex-direction: column; align-items: center; border-radius: 0 0 32px 32px; }
+  .profile-avatar { width: 88px; height: 88px; border-radius: 44px; background: rgba(255,255,255,0.15); border: 3px solid var(--accent); display: flex; align-items: center; justify-content: center; font-size: 48px; margin-bottom: 12px; }
+  .profile-name { color: #fff; font-size: 20px; font-weight: 800; }
+  .profile-id { color: rgba(255,255,255,0.7); font-size: 13px; margin: 4px 0 10px; }
+  .profile-class-badge { background: rgba(249,168,37,0.25); border: 1px solid var(--accent); border-radius: 20px; padding: 5px 16px; }
+  .profile-class-text { color: var(--accent); font-size: 13px; font-weight: 700; }
+  .profile-stats { display: flex; gap: 10px; padding: 12px 16px; }
+  .profile-stat { flex: 1; background: var(--surface); border-radius: 14px; padding: 14px 8px; text-align: center; box-shadow: 0 2px 8px rgba(26,35,126,0.07); }
+  .profile-stat.main { background: var(--primary); }
+  .profile-stat-val { font-size: 20px; font-weight: 900; color: var(--primary); }
+  .profile-stat.main .profile-stat-val { color: #fff; }
+  .profile-stat-lbl { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+  .profile-stat.main .profile-stat-lbl { color: rgba(255,255,255,0.7); }
+  .info-card { background: var(--surface); border-radius: 16px; margin: 0 16px 12px; padding: 16px; box-shadow: 0 2px 8px rgba(26,35,126,0.07); }
+  .info-card-title { font-size: 14px; font-weight: 800; color: var(--primary); padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 10px; }
+  .info-row { display: flex; justify-content: space-between; padding: 6px 0; }
+  .info-label { font-size: 13px; color: var(--text-muted); }
+  .info-value { font-size: 13px; font-weight: 600; color: var(--text); }
+  .menu-card { background: var(--surface); border-radius: 16px; margin: 0 16px 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(26,35,126,0.07); }
+  .menu-row { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--border); cursor: pointer; border: none; background: none; width: 100%; text-align: right; }
+  .menu-row:last-child { border-bottom: none; }
+  .menu-icon-wrap { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+  .menu-label-wrap { flex: 1; }
+  .menu-label-text { font-size: 14px; font-weight: 600; color: var(--text); }
+  .menu-label-sub { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+  .menu-arrow { font-size: 16px; color: var(--text-muted); }
+  .logout-btn { background: rgba(198,40,40,0.08); border: 1.5px solid rgba(198,40,40,0.2); border-radius: 14px; margin: 0 16px 12px; padding: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-family: inherit; font-size: 15px; font-weight: 700; color: var(--error); width: calc(100% - 32px); }
+  .version-text { text-align: center; font-size: 11px; color: var(--text-muted); padding: 4px 0 16px; }
+
+  /* ===== BOTTOM TAB BAR ===== */
+  .tab-bar {
+    display: flex;
+    background: var(--surface);
+    padding: 8px 8px calc(var(--safe-bottom) + 8px);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -4px 16px rgba(26,35,126,0.08);
+    position: relative;
+    z-index: 10;
+  }
+  .tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; background: none; border: none; padding: 4px 0; }
+  .tab-icon-wrap { width: 40px; height: 30px; border-radius: 14px; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+  .tab-item.active .tab-icon-wrap { background: rgba(26,35,126,0.1); }
+  .tab-icon { font-size: 22px; }
+  .tab-label { font-size: 10px; font-weight: 600; color: var(--text-muted); font-family: inherit; }
+  .tab-item.active .tab-label { color: var(--primary); font-weight: 800; }
+
+  /* ===== MODALS ===== */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; display: none; align-items: flex-end; }
+  .modal-overlay.open { display: flex; }
+  .modal-body { background: var(--surface); border-radius: 24px 24px 0 0; width: 100%; padding: 8px 0 0; animation: slideUp 0.3s ease; }
+  .modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 16px; }
+
+  /* ===== INSTALL BANNER ===== */
+  .install-banner { background: linear-gradient(135deg, var(--primary), #283593); margin: 8px 16px 0; border-radius: 14px; padding: 14px; display: flex; align-items: center; gap: 10px; cursor: pointer; box-shadow: 0 4px 14px rgba(26,35,126,0.25); }
+  .install-icon { font-size: 28px; flex-shrink: 0; }
+  .install-text { flex: 1; }
+  .install-title { color: #fff; font-size: 13px; font-weight: 700; }
+  .install-sub { color: rgba(255,255,255,0.75); font-size: 11px; margin-top: 2px; }
+  .install-close { background: rgba(255,255,255,0.2); border: none; border-radius: 8px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px; cursor: pointer; flex-shrink: 0; }
+
+  /* ===== EMPTY STATE ===== */
+  .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; gap: 10px; }
+  .empty-icon { font-size: 56px; }
+  .empty-title { font-size: 18px; font-weight: 700; color: var(--text); }
+  .empty-sub { font-size: 13px; color: var(--text-muted); }
+
+  /* ===== ANIMATIONS ===== */
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeIn 0.3s ease; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ===== HOME SCREEN ===== -->
+  <div class="screen active" id="screen-home">
+    <div class="home-header">
+      <div class="home-header-top">
+        <div>
+          <div class="greeting" id="greeting-text">صبح بخیر،</div>
+          <div class="student-name">علی محمدی 👋</div>
+        </div>
+        <button class="notif-btn" onclick="showNotif()">
+          🔔
+          <div class="notif-badge">۲</div>
+        </button>
+      </div>
+      <div class="school-badge">
+        <span class="school-badge-icon">🎓</span>
+        <div>
+          <div class="school-badge-name">پاپلی خلعتبری</div>
+          <div class="school-badge-class">یازدهم گرافیک - الف</div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-body">
+      <div id="install-banner-home"></div>
+
+      <!-- Quick Actions -->
+      <div class="section-header">
+        <span class="section-title">دسترسی سریع</span>
+      </div>
+      <div class="quick-grid">
+        <button class="quick-card" style="border-top-color:#1A237E" onclick="switchTab('schedule')">
+          <div class="quick-icon-wrap" style="background:rgba(26,35,126,0.1)">
+            <span class="quick-icon">📅</span>
+          </div>
+          <span class="quick-label">برنامه کلاسی</span>
+        </button>
+        <button class="quick-card" style="border-top-color:#2E7D32" onclick="switchTab('grades')">
+          <div class="quick-icon-wrap" style="background:rgba(46,125,50,0.1)">
+            <span class="quick-icon">📊</span>
+          </div>
+          <span class="quick-label">کارنامه</span>
+        </button>
+        <button class="quick-card" style="border-top-color:#B8860B" onclick="switchTab('messages')">
+          <div class="quick-icon-wrap" style="background:rgba(184,134,11,0.1)">
+            <span class="quick-icon">💬</span>
+          </div>
+          <span class="quick-label">پیام‌رسان</span>
+        </button>
+        <button class="quick-card" style="border-top-color:#7B1FA2" onclick="switchTab('announcements')">
+          <div class="quick-icon-wrap" style="background:rgba(123,31,162,0.1)">
+            <span class="quick-icon">📢</span>
+          </div>
+          <span class="quick-label">اطلاعیه‌ها</span>
+        </button>
+      </div>
+
+      <!-- Announcements Preview -->
+      <div class="section-header">
+        <span class="section-title">آخرین اطلاعیه‌ها</span>
+        <button class="see-all" onclick="switchTab('announcements')">مشاهده همه</button>
+      </div>
+      <div id="home-announcements"></div>
+
+      <!-- Stats -->
+      <div class="section-header"><span class="section-title">خلاصه تحصیلی</span></div>
+      <div class="stats-row" style="padding:0 16px 20px">
+        <div class="stat-card" style="background:rgba(26,35,126,0.08)">
+          <span class="stat-emoji">⭐</span>
+          <span class="stat-val" style="color:#1A237E">۱۷.۸</span>
+          <span class="stat-lbl">معدل ترم اول</span>
+        </div>
+        <div class="stat-card" style="background:rgba(46,125,50,0.08)">
+          <span class="stat-emoji">✅</span>
+          <span class="stat-val" style="color:#2E7D32">۹۵٪</span>
+          <span class="stat-lbl">حضور و غیاب</span>
+        </div>
+        <div class="stat-card" style="background:rgba(249,168,37,0.12)">
+          <span class="stat-emoji">🏆</span>
+          <span class="stat-val" style="color:#B8860B">رتبه ۳</span>
+          <span class="stat-lbl">رتبه کلاسی</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SCHEDULE SCREEN ===== -->
+  <div class="screen" id="screen-schedule">
+    <div class="header">
+      <div class="header-title">برنامه کلاسی</div>
+      <div class="header-sub">یازدهم گرافیک - الف</div>
+    </div>
+    <div class="day-picker" id="day-picker"></div>
+    <div class="screen-body" id="schedule-body"></div>
+  </div>
+
+  <!-- ===== GRADES SCREEN ===== -->
+  <div class="screen" id="screen-grades">
+    <div class="header" style="background:linear-gradient(135deg,#2E7D32,#1B5E20)">
+      <div class="header-title">کارنامه تحصیلی</div>
+      <div class="header-sub">علی محمدی | یازدهم گرافیک</div>
+    </div>
+    <div class="term-picker">
+      <button class="term-btn active" id="term-btn-1" onclick="switchTerm(1)">ترم اول</button>
+      <button class="term-btn" id="term-btn-2" onclick="switchTerm(2)">ترم دوم</button>
+    </div>
+    <div class="screen-body" id="grades-body"></div>
+  </div>
+
+  <!-- ===== MESSAGES SCREEN ===== -->
+  <div class="screen" id="screen-messages">
+    <div id="msg-main-view" style="display:flex;flex-direction:column;flex:1;overflow:hidden">
+      <div class="header" style="background:linear-gradient(135deg,#B8860B,#8D6708)">
+        <div class="header-title">پیام‌رسان</div>
+        <div class="header-sub">ارتباط با معلمان</div>
+      </div>
+      <div class="msg-tabs">
+        <button class="msg-tab active" id="msg-tab-inbox" onclick="switchMsgTab('inbox')">
+          صندوق ورودی
+          <span class="msg-unread-badge">۲</span>
+        </button>
+        <button class="msg-tab" id="msg-tab-teachers" onclick="switchMsgTab('teachers')">
+          معلمان
+        </button>
+      </div>
+      <div class="screen-body" id="messages-body"></div>
+    </div>
+    <!-- Chat View -->
+    <div class="chat-view" id="chat-view">
+      <div class="chat-header">
+        <button class="back-btn" onclick="closeChat()">→</button>
+        <div class="chat-teacher-info">
+          <span class="chat-avatar" id="chat-avatar"></span>
+          <div>
+            <div class="chat-name" id="chat-name"></div>
+            <div class="chat-subj" id="chat-subj"></div>
+          </div>
+        </div>
+        <div class="online-dot" id="chat-online-dot"></div>
+      </div>
+      <div class="chat-messages" id="chat-messages"></div>
+      <div class="chat-input-row">
+        <input type="text" class="chat-input" id="chat-input" placeholder="پیام خود را بنویسید..." onkeydown="if(event.key==='Enter')sendMsg()">
+        <button class="send-btn" onclick="sendMsg()">ارسال</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ANNOUNCEMENTS SCREEN ===== -->
+  <div class="screen" id="screen-announcements">
+    <div class="header">
+      <div class="header-title">اخبار و اطلاعیه‌ها</div>
+      <div class="header-sub">آخرین اخبار هنرستان</div>
+    </div>
+    <div class="filter-bar" id="filter-bar"></div>
+    <div class="screen-body" id="announcements-body"></div>
+  </div>
+
+  <!-- ===== PROFILE SCREEN ===== -->
+  <div class="screen" id="screen-profile">
+    <div class="profile-header">
+      <div class="profile-avatar">🧑‍🎓</div>
+      <div class="profile-name">علی محمدی</div>
+      <div class="profile-id">کد دانش‌آموزی: ۱۴۰۳-۱۲۳۴</div>
+      <div class="profile-class-badge">
+        <span class="profile-class-text">یازدهم گرافیک - الف</span>
+      </div>
+    </div>
+    <div class="screen-body">
+      <div class="profile-stats">
+        <div class="profile-stat">
+          <div class="profile-stat-val" style="color:#1A237E">۱۷.۸</div>
+          <div class="profile-stat-lbl">معدل ترم ۱</div>
+        </div>
+        <div class="profile-stat main">
+          <div class="profile-stat-val">۱۸.۳</div>
+          <div class="profile-stat-lbl">معدل ترم ۲</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-val" style="color:#1A237E">۳</div>
+          <div class="profile-stat-lbl">رتبه کلاسی</div>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-title">اطلاعات هنرستان</div>
+        <div class="info-row"><span class="info-label">نام هنرستان</span><span class="info-value">پاپلی خلعتبری</span></div>
+        <div class="info-row"><span class="info-label">مدیر</span><span class="info-value">جناب آقای محمدی</span></div>
+        <div class="info-row"><span class="info-label">شماره تماس</span><span class="info-value">021-XXXXXXXX</span></div>
+        <div class="info-row"><span class="info-label">سال تحصیلی</span><span class="info-value">۱۴۰۲-۱۴۰۳</span></div>
+      </div>
+      <div class="menu-card">
+        <button class="menu-row" onclick="alert('به‌زودی...')">
+          <div class="menu-icon-wrap" style="background:rgba(26,35,126,0.1)">🔔</div>
+          <div class="menu-label-wrap"><div class="menu-label-text">اعلان‌ها</div><div class="menu-label-sub">مدیریت اطلاعیه‌ها</div></div>
+          <span class="menu-arrow">←</span>
+        </button>
+        <button class="menu-row" onclick="alert('به‌زودی...')">
+          <div class="menu-icon-wrap" style="background:rgba(1,87,155,0.1)">📑</div>
+          <div class="menu-label-wrap"><div class="menu-label-text">مدارک و فرم‌ها</div><div class="menu-label-sub">دریافت فرم‌های مدرسه</div></div>
+          <span class="menu-arrow">←</span>
+        </button>
+        <button class="menu-row" onclick="alert('به‌زودی...')">
+          <div class="menu-icon-wrap" style="background:rgba(46,125,50,0.1)">🎓</div>
+          <div class="menu-label-wrap"><div class="menu-label-text">دوره‌های آموزشی</div><div class="menu-label-sub">محتوای آموزشی</div></div>
+          <span class="menu-arrow">←</span>
+        </button>
+        <button class="menu-row" onclick="alert('برای پشتیبانی با دفتر مدرسه تماس بگیرید')">
+          <div class="menu-icon-wrap" style="background:rgba(123,31,162,0.1)">❓</div>
+          <div class="menu-label-wrap"><div class="menu-label-text">راهنما و پشتیبانی</div><div class="menu-label-sub">سوالات متداول</div></div>
+          <span class="menu-arrow">←</span>
+        </button>
+      </div>
+      <button class="logout-btn" onclick="if(confirm('آیا از خروج مطمئن هستید؟')) alert('خروج از حساب')">🚪 خروج از حساب</button>
+      <div class="version-text">نسخه ۱.۰.۰ | هنرستان پاپلی خلعتبری</div>
+    </div>
+  </div>
+
+  <!-- ===== BOTTOM TAB BAR ===== -->
+  <div class="tab-bar">
+    <button class="tab-item active" id="tab-home" onclick="switchTab('home')">
+      <div class="tab-icon-wrap"><span class="tab-icon">🏠</span></div>
+      <span class="tab-label">خانه</span>
+    </button>
+    <button class="tab-item" id="tab-schedule" onclick="switchTab('schedule')">
+      <div class="tab-icon-wrap"><span class="tab-icon">📅</span></div>
+      <span class="tab-label">برنامه</span>
+    </button>
+    <button class="tab-item" id="tab-grades" onclick="switchTab('grades')">
+      <div class="tab-icon-wrap"><span class="tab-icon">📊</span></div>
+      <span class="tab-label">نمرات</span>
+    </button>
+    <button class="tab-item" id="tab-messages" onclick="switchTab('messages')">
+      <div class="tab-icon-wrap"><span class="tab-icon">💬</span></div>
+      <span class="tab-label">پیام‌ها</span>
+    </button>
+    <button class="tab-item" id="tab-profile" onclick="switchTab('profile')">
+      <div class="tab-icon-wrap"><span class="tab-icon">👤</span></div>
+      <span class="tab-label">پروفایل</span>
+    </button>
+  </div>
+
+</div>
+
+<!-- Announcement Detail Modal -->
+<div class="modal-overlay" id="ann-modal">
+  <div class="modal-body">
+    <div class="modal-handle"></div>
+    <div class="ann-detail-card" id="ann-detail-content"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const ANNOUNCEMENTS = [
+  { id:1, title:'برگزاری امتحانات پایان ترم', body:'امتحانات پایان ترم دوم از تاریخ ۱۵ خرداد آغاز می‌شود. لطفاً برنامه امتحانی را از بخش برنامه کلاسی مشاهده فرمایید.', date:'۱۴۰۳/۰۳/۰۱', category:'مهم', icon:'📢', color:'#C62828' },
+  { id:2, title:'اردوی علمی تفریحی', body:'اردوی علمی تفریحی پایه دهم در تاریخ ۵ خرداد برگزار می‌شود. ثبت‌نام از طریق دفتر مدرسه انجام شود.', date:'۱۴۰۳/۰۲/۲۸', category:'اردو', icon:'🎒', color:'#2E7D32' },
+  { id:3, title:'جشن هنر دانش‌آموزی', body:'جشن هنر سالانه هنرستان با حضور والدین گرامی در تاریخ ۱۰ خرداد برگزار خواهد شد.', date:'۱۴۰۳/۰۲/۲۵', category:'مناسبت', icon:'🎨', color:'#F9A825' },
+  { id:4, title:'کارگاه آموزشی نرم‌افزار', body:'کارگاه آموزشی طراحی گرافیک با نرم‌افزار فتوشاپ ویژه دانش‌آموزان پایه یازدهم برگزار می‌گردد.', date:'۱۴۰۳/۰۲/۲۰', category:'آموزشی', icon:'💻', color:'#01579B' },
+];
+
+const SCHEDULE = {
+  'شنبه':     [ {t:'۰۷:۳۰-۰۸:۴۵',s:'ریاضی',teacher:'خانم احمدی',room:'۱۰۱',color:'#1A237E'}, {t:'۰۸:۴۵-۱۰:۰۰',s:'طراحی گرافیک',teacher:'آقای رضایی',room:'کارگاه ۱',color:'#6A1B9A'}, {t:'۱۰:۱۵-۱۱:۳۰',s:'زبان انگلیسی',teacher:'خانم کریمی',room:'۲۰۳',color:'#00695C'}, {t:'۱۱:۳۰-۱۲:۴۵',s:'دین و زندگی',teacher:'آقای موسوی',room:'۱۰۲',color:'#4A148C'} ],
+  'یک‌شنبه': [ {t:'۰۷:۳۰-۰۸:۴۵',s:'ادبیات فارسی',teacher:'خانم حسینی',room:'۲۰۱',color:'#1B5E20'}, {t:'۰۸:۴۵-۱۰:۰۰',s:'عکاسی',teacher:'آقای نجفی',room:'کارگاه ۲',color:'#BF360C'}, {t:'۱۰:۱۵-۱۱:۳۰',s:'تاریخ',teacher:'آقای صادقی',room:'۱۰۴',color:'#827717'}, {t:'۱۱:۳۰-۱۲:۴۵',s:'تربیت بدنی',teacher:'آقای کمالی',room:'سالن',color:'#2E7D32'} ],
+  'دوشنبه':  [ {t:'۰۷:۳۰-۰۸:۴۵',s:'فیزیک',teacher:'آقای اکبری',room:'۳۰۱',color:'#0D47A1'}, {t:'۰۸:۴۵-۱۰:۰۰',s:'طراحی گرافیک',teacher:'آقای رضایی',room:'کارگاه ۱',color:'#6A1B9A'}, {t:'۱۰:۱۵-۱۱:۳۰',s:'ریاضی',teacher:'خانم احمدی',room:'۱۰۱',color:'#1A237E'}, {t:'۱۱:۳۰-۱۲:۴۵',s:'معارف',teacher:'آقای موسوی',room:'۱۰۲',color:'#4A148C'} ],
+  'سه‌شنبه': [ {t:'۰۷:۳۰-۰۸:۴۵',s:'شیمی',teacher:'خانم محمودی',room:'۳۰۲',color:'#F57F17'}, {t:'۰۸:۴۵-۱۰:۰۰',s:'ادبیات فارسی',teacher:'خانم حسینی',room:'۲۰۱',color:'#1B5E20'}, {t:'۱۰:۱۵-۱۱:۳۰',s:'عکاسی',teacher:'آقای نجفی',room:'کارگاه ۲',color:'#BF360C'}, {t:'۱۱:۳۰-۱۲:۴۵',s:'زبان انگلیسی',teacher:'خانم کریمی',room:'۲۰۳',color:'#00695C'} ],
+  'چهارشنبه':[ {t:'۰۷:۳۰-۰۸:۴۵',s:'ریاضی',teacher:'خانم احمدی',room:'۱۰۱',color:'#1A237E'}, {t:'۰۸:۴۵-۱۰:۰۰',s:'فیزیک',teacher:'آقای اکبری',room:'۳۰۱',color:'#0D47A1'}, {t:'۱۰:۱۵-۱۱:۳۰',s:'طراحی گرافیک',teacher:'آقای رضایی',room:'کارگاه ۱',color:'#6A1B9A'}, {t:'۱۱:۳۰-۱۲:۴۵',s:'تاریخ',teacher:'آقای صادقی',room:'۱۰۴',color:'#827717'} ],
+};
+
+const GRADES = {
+  1: [
+    {s:'ریاضی',g:18.5,teacher:'خانم احمدی'}, {s:'طراحی گرافیک',g:19,teacher:'آقای رضایی'},
+    {s:'زبان انگلیسی',g:17,teacher:'خانم کریمی'}, {s:'ادبیات فارسی',g:16.5,teacher:'خانم حسینی'},
+    {s:'فیزیک',g:15,teacher:'آقای اکبری'}, {s:'شیمی',g:14.5,teacher:'خانم محمودی'},
+    {s:'دین و زندگی',g:19.5,teacher:'آقای موسوی'}, {s:'تاریخ',g:17.5,teacher:'آقای صادقی'},
+    {s:'عکاسی',g:20,teacher:'آقای نجفی'},
+  ],
+  2: [
+    {s:'ریاضی',g:17,teacher:'خانم احمدی'}, {s:'طراحی گرافیک',g:19.5,teacher:'آقای رضایی'},
+    {s:'زبان انگلیسی',g:18,teacher:'خانم کریمی'}, {s:'ادبیات فارسی',g:17.5,teacher:'خانم حسینی'},
+    {s:'فیزیک',g:16,teacher:'آقای اکبری'}, {s:'شیمی',g:15.5,teacher:'خانم محمودی'},
+    {s:'دین و زندگی',g:20,teacher:'آقای موسوی'}, {s:'تاریخ',g:18,teacher:'آقای صادقی'},
+    {s:'عکاسی',g:20,teacher:'آقای نجفی'},
+  ],
+};
+
+const TEACHERS = [
+  {id:1,name:'خانم احمدی',subject:'ریاضی',avatar:'👩‍🏫',online:true},
+  {id:2,name:'آقای رضایی',subject:'طراحی گرافیک',avatar:'👨‍🎨',online:false},
+  {id:3,name:'خانم کریمی',subject:'زبان انگلیسی',avatar:'👩‍💼',online:true},
+  {id:4,name:'آقای نجفی',subject:'عکاسی',avatar:'📷',online:true},
+  {id:5,name:'خانم حسینی',subject:'ادبیات فارسی',avatar:'📚',online:false},
+  {id:6,name:'آقای موسوی',subject:'دین و زندگی',avatar:'👨‍🏫',online:true},
+  {id:7,name:'آقای اکبری',subject:'فیزیک',avatar:'⚛️',online:true},
+  {id:8,name:'خانم محمودی',subject:'شیمی',avatar:'🧪',online:false},
+];
+
+const INBOX = [
+  {id:1,teacher:TEACHERS[0],subject:'در مورد تکلیف هفتگی',preview:'لطفاً تکالیف فصل سوم را تا جمعه تحویل دهید.',date:'۱۴۰۳/۰۳/۰۵',read:false},
+  {id:2,teacher:TEACHERS[2],subject:'آمادگی آزمون',preview:'آزمون واژگان هفته آینده برگزار خواهد شد.',date:'۱۴۰۳/۰۳/۰۳',read:true},
+];
+
+// ============================================================
+// STATE
+// ============================================================
+let currentTab = 'home';
+let currentDay = 'شنبه';
+let currentTerm = 1;
+let currentMsgTab = 'inbox';
+let currentTeacher = null;
+let annFilter = 'همه';
+let chatHistory = {};
+let deferredPrompt = null;
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function switchTab(tab) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+  document.getElementById('screen-' + tab).classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+  currentTab = tab;
+  if (tab === 'schedule') renderSchedule();
+  if (tab === 'grades') renderGrades();
+  if (tab === 'messages') renderMessages();
+  if (tab === 'announcements') renderAnnouncements();
+}
+
+// ============================================================
+// GREETING
+// ============================================================
+function setGreeting() {
+  const h = new Date().getHours();
+  const g = h < 12 ? 'صبح بخیر،' : h < 17 ? 'ظهر بخیر،' : 'عصر بخیر،';
+  document.getElementById('greeting-text').textContent = g;
+}
+
+// ============================================================
+// INSTALL PWA BANNER
+// ============================================================
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  showInstallBanner();
+});
+
+function showInstallBanner() {
+  const el = document.getElementById('install-banner-home');
+  el.innerHTML = `
+    <div class="install-banner" onclick="installPWA()">
+      <span class="install-icon">📲</span>
+      <div class="install-text">
+        <div class="install-title">نصب اپ روی گوشی</div>
+        <div class="install-sub">برای دسترسی سریع‌تر نصب کنید</div>
+      </div>
+      <button class="install-close" onclick="event.stopPropagation();this.closest('.install-banner').remove()">✕</button>
+    </div>`;
+}
+
+function installPWA() {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(() => { deferredPrompt = null; document.getElementById('install-banner-home').innerHTML = ''; });
+}
+
+// ============================================================
+// HOME – announcements preview
+// ============================================================
+function renderHomeAnnouncements() {
+  const el = document.getElementById('home-announcements');
+  el.innerHTML = ANNOUNCEMENTS.slice(0,3).map(a => `
+    <button class="ann-card fade-in" onclick="openAnn(${a.id})">
+      <div class="ann-left" style="background:${a.color}18">${a.icon}</div>
+      <div class="ann-body">
+        <div class="ann-meta">
+          <span class="ann-badge" style="background:${a.color}20;color:${a.color}">${a.category}</span>
+          <span class="ann-date">${a.date}</span>
+        </div>
+        <div class="ann-title">${a.title}</div>
+        <div class="ann-preview">${a.body}</div>
+      </div>
+    </button>`).join('');
+}
+
+// ============================================================
+// SCHEDULE
+// ============================================================
+function renderSchedule() {
+  const days = Object.keys(SCHEDULE);
+  const picker = document.getElementById('day-picker');
+  picker.innerHTML = days.map(d => `
+    <button class="day-btn${d===currentDay?' active':''}" onclick="selectDay('${d}')">${d}</button>`).join('');
+  renderDayClasses();
+}
+
+function selectDay(day) {
+  currentDay = day;
+  document.querySelectorAll('.day-btn').forEach(b => b.classList.toggle('active', b.textContent === day));
+  renderDayClasses();
+}
+
+function renderDayClasses() {
+  const classes = SCHEDULE[currentDay] || [];
+  const body = document.getElementById('schedule-body');
+  body.innerHTML = `
+    <div class="schedule-day-header">
+      <span class="schedule-day-title">📅 ${currentDay}</span>
+      <span class="class-count">${classes.length} زنگ درسی</span>
+    </div>
+    ${classes.map((c,i) => `
+      <div class="class-card fade-in" style="border-right-color:${c.color}">
+        <div class="class-time" style="background:${c.color}12">
+          <span class="time-text" style="color:${c.color}">${c.t.split('-')[0]}</span>
+          <div class="time-dot" style="background:${c.color}"></div>
+          <span class="time-text" style="color:${c.color}">${c.t.split('-')[1]}</span>
+        </div>
+        <div class="class-info">
+          <div class="class-subject">${c.s}</div>
+          <div class="class-meta">👩‍🏫 ${c.teacher}<br>🚪 کلاس ${c.room}</div>
+        </div>
+        <div class="period-num" style="background:${c.color}10">
+          <span class="period-n" style="color:${c.color}">${i+1}</span>
+          <span class="period-l" style="color:${c.color}">زنگ</span>
+        </div>
+      </div>`).join('')}
+    <div class="schedule-summary">
+      <div class="summary-title">📋 خلاصه روز</div>
+      <div class="summary-stats">
+        <div class="sum-item"><div class="sum-val">${classes.length}</div><div class="sum-lbl">زنگ</div></div>
+        <div class="sum-divider"></div>
+        <div class="sum-item"><div class="sum-val">۰۷:۳۰</div><div class="sum-lbl">شروع</div></div>
+        <div class="sum-divider"></div>
+        <div class="sum-item"><div class="sum-val">۱۲:۴۵</div><div class="sum-lbl">پایان</div></div>
+      </div>
+    </div>`;
+  body.scrollTop = 0;
+}
+
+// ============================================================
+// GRADES
+// ============================================================
+function switchTerm(t) {
+  currentTerm = t;
+  document.getElementById('term-btn-1').classList.toggle('active', t===1);
+  document.getElementById('term-btn-2').classList.toggle('active', t===2);
+  renderGrades();
+}
+
+function gradeColor(g) {
+  if (g>=18) return '#2E7D32';
+  if (g>=15) return '#1565C0';
+  if (g>=10) return '#E65100';
+  return '#C62828';
+}
+function gradeLabel(g) {
+  if (g>=18) return 'عالی';
+  if (g>=15) return 'خوب';
+  if (g>=10) return 'قابل قبول';
+  return 'مردودی';
+}
+
+function renderGrades() {
+  const list = GRADES[currentTerm];
+  const avg = (list.reduce((s,g)=>s+g.g,0)/list.length).toFixed(1);
+  const ac = gradeColor(parseFloat(avg));
+  const pass = list.filter(g=>g.g>=10).length;
+  const body = document.getElementById('grades-body');
+  body.innerHTML = `
+    <div class="avg-card fade-in" style="border-color:${ac}">
+      <div class="avg-left">
+        <div class="avg-label">معدل کل</div>
+        <div class="avg-value" style="color:${ac}">${avg}</div>
+        <div class="avg-max">از ۲۰</div>
+      </div>
+      <div class="avg-right">
+        <div class="avg-stat"><div class="avg-stat-val">${list.length}</div><div class="avg-stat-lbl">درس</div></div>
+        <div class="avg-stat"><div class="avg-stat-val" style="color:#2E7D32">${pass}</div><div class="avg-stat-lbl">قبول</div></div>
+        <div class="avg-stat"><div class="avg-stat-val" style="color:#C62828">${list.length-pass}</div><div class="avg-stat-lbl">مردود</div></div>
+      </div>
+    </div>
+    <div style="padding:0 16px 8px"><span class="section-title">نمرات درسی</span></div>
+    ${list.map(item => {
+      const c = gradeColor(item.g);
+      const pct = (item.g/20*100).toFixed(1);
+      return `
+      <div class="grade-card fade-in">
+        <div class="grade-circle" style="border-color:${c}">
+          <span class="grade-num" style="color:${c}">${item.g}</span>
+        </div>
+        <div class="grade-center">
+          <div class="grade-subject">${item.s}</div>
+          <div class="grade-teacher">👩‍🏫 ${item.teacher}</div>
+          <div class="grade-bar-track">
+            <div class="grade-bar-fill" style="width:${pct}%;background:${c}"></div>
+          </div>
+        </div>
+        <div class="grade-badge" style="background:${c}18">
+          <span class="grade-badge-text" style="color:${c}">${gradeLabel(item.g)}</span>
+        </div>
+      </div>`;
+    }).join('')}
+    <div class="legend-card">
+      <div class="legend-title">راهنمای نمرات</div>
+      <div class="legend-grid">
+        <div class="legend-item"><div class="legend-dot" style="background:#2E7D32"></div><span class="legend-text">عالی (۱۸-۲۰)</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#1565C0"></div><span class="legend-text">خوب (۱۵-۱۷)</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#E65100"></div><span class="legend-text">قابل قبول (۱۰-۱۴)</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#C62828"></div><span class="legend-text">مردودی (زیر ۱۰)</span></div>
+      </div>
+    </div>`;
+  body.scrollTop = 0;
+}
+
+// ============================================================
+// MESSAGES
+// ============================================================
+function switchMsgTab(tab) {
+  currentMsgTab = tab;
+  document.getElementById('msg-tab-inbox').classList.toggle('active', tab==='inbox');
+  document.getElementById('msg-tab-teachers').classList.toggle('active', tab==='teachers');
+  renderMessages();
+}
+
+function renderMessages() {
+  const body = document.getElementById('messages-body');
+  if (currentMsgTab === 'inbox') {
+    body.innerHTML = INBOX.map(m => `
+      <button class="msg-item${m.read?'':' unread'} fade-in" onclick="openChat(${m.teacher.id})">
+        <div class="msg-avatar-wrap">
+          <span class="msg-avatar">${m.teacher.avatar}</span>
+          ${!m.read ? '<div class="msg-unread-dot"></div>' : ''}
+        </div>
+        <div class="msg-content">
+          <div class="msg-header">
+            <span class="msg-sender">${m.teacher.name}</span>
+            <span class="msg-date">${m.date}</span>
+          </div>
+          <div class="msg-subject${m.read?'':' bold'}">${m.subject}</div>
+          <div class="msg-preview">${m.preview}</div>
+        </div>
+      </button>`).join('');
+  } else {
+    body.innerHTML = `<p class="helper-text">برای شروع مکالمه روی نام معلم بزنید</p>` +
+      TEACHERS.map(t => `
+        <button class="teacher-row fade-in" onclick="openChat(${t.id})">
+          <div class="teacher-avatar">${t.avatar}</div>
+          <div class="teacher-info">
+            <div class="teacher-name">${t.name}</div>
+            <div class="teacher-subj">${t.subject}</div>
+          </div>
+          <div class="status-badge" style="background:${t.online?'rgba(46,125,50,0.12)':'var(--border)'}">
+            <div class="status-dot" style="background:${t.online?'#2E7D32':'var(--text-muted)'}"></div>
+            <span class="status-text" style="color:${t.online?'#2E7D32':'var(--text-muted)'}">${t.online?'آنلاین':'آفلاین'}</span>
+          </div>
+        </button>`).join('');
+  }
+  body.scrollTop = 0;
+}
+
+function openChat(teacherId) {
+  currentTeacher = TEACHERS.find(t => t.id === teacherId);
+  if (!chatHistory[teacherId]) {
+    chatHistory[teacherId] = [
+      { text: 'سلام! چطور می‌توانم کمک کنم؟', sender: 'teacher', time: '۱۰:۳۰' },
+    ];
+  }
+  document.getElementById('chat-avatar').textContent = currentTeacher.avatar;
+  document.getElementById('chat-name').textContent = currentTeacher.name;
+  document.getElementById('chat-subj').textContent = currentTeacher.subject;
+  document.getElementById('chat-online-dot').style.background = currentTeacher.online ? '#2E7D32' : '#9E9E9E';
+  document.getElementById('msg-main-view').style.display = 'none';
+  document.getElementById('chat-view').classList.add('open');
+  renderChatMessages(teacherId);
+}
+
+function closeChat() {
+  document.getElementById('chat-view').classList.remove('open');
+  document.getElementById('msg-main-view').style.display = 'flex';
+}
+
+function renderChatMessages(tid) {
+  const msgs = chatHistory[tid || currentTeacher.id];
+  const el = document.getElementById('chat-messages');
+  el.innerHTML = msgs.map(m => `
+    <div class="bubble bubble-${m.sender} fade-in">
+      ${m.text}
+      <div class="bubble-time">${m.time}</div>
+    </div>`).join('');
+  el.scrollTop = el.scrollHeight;
+}
+
+function sendMsg() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text || !currentTeacher) return;
+  const tid = currentTeacher.id;
+  const now = new Date();
+  const time = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+  chatHistory[tid].push({ text, sender: 'student', time });
+  input.value = '';
+  renderChatMessages(tid);
+  // Auto reply after 1.5s
+  setTimeout(() => {
+    const replies = [
+      'متوجه شدم، ممنون از پیامتان.',
+      'حتماً، این موضوع را بررسی می‌کنم.',
+      'لطفاً در ساعات اداری مجدداً پیگیری کنید.',
+      'خوشحال می‌شوم کمک کنم!',
+    ];
+    chatHistory[tid].push({ text: replies[Math.floor(Math.random()*replies.length)], sender: 'teacher', time: now.getHours().toString().padStart(2,'0')+':'+(now.getMinutes()+1).toString().padStart(2,'0') });
+    renderChatMessages(tid);
+  }, 1500);
+}
+
+// ============================================================
+// ANNOUNCEMENTS
+// ============================================================
+const ANN_FILTERS = ['همه','مهم','اردو','مناسبت','آموزشی'];
+
+function renderAnnouncements() {
+  document.getElementById('filter-bar').innerHTML = ANN_FILTERS.map(f => `
+    <button class="filter-chip${f===annFilter?' active':''}" onclick="setAnnFilter('${f}')">${f}</button>`).join('');
+  renderAnnList();
+}
+
+function setAnnFilter(f) {
+  annFilter = f;
+  document.querySelectorAll('.filter-chip').forEach(b => b.classList.toggle('active', b.textContent === f));
+  renderAnnList();
+}
+
+function renderAnnList() {
+  const list = annFilter==='همه' ? ANNOUNCEMENTS : ANNOUNCEMENTS.filter(a=>a.category===annFilter);
+  const body = document.getElementById('announcements-body');
+  if (!list.length) {
+    body.innerHTML = `<div class="empty-state"><span class="empty-icon">🔍</span><span class="empty-title">موردی یافت نشد</span></div>`;
+    return;
+  }
+  body.innerHTML = list.map(a => `
+    <button class="ann-card fade-in" onclick="openAnn(${a.id})" style="margin:0 16px 10px;width:calc(100% - 32px)">
+      <div class="ann-left" style="background:${a.color}15">${a.icon}</div>
+      <div class="ann-body">
+        <div class="ann-meta">
+          <span class="ann-badge" style="background:${a.color}20;color:${a.color}">${a.category}</span>
+          <span class="ann-date">${a.date}</span>
+        </div>
+        <div class="ann-title">${a.title}</div>
+        <div class="ann-preview">${a.body}</div>
+      </div>
+    </button>`).join('');
+  body.scrollTop = 0;
+}
+
+function openAnn(id) {
+  const a = ANNOUNCEMENTS.find(x=>x.id===id);
+  if (!a) return;
+  document.getElementById('ann-detail-content').innerHTML = `
+    <div class="ann-detail-icon-wrap" style="background:${a.color}18">${a.icon}</div>
+    <span class="ann-badge" style="background:${a.color}20;color:${a.color};margin-bottom:10px">${a.category}</span>
+    <div class="ann-detail-title">${a.title}</div>
+    <div class="ann-detail-date">📅 ${a.date}</div>
+    <div class="ann-detail-body">${a.body}</div>
+    <button class="ann-close-btn" onclick="closeAnn()">بستن</button>`;
+  document.getElementById('ann-modal').classList.add('open');
+}
+
+function closeAnn() {
+  document.getElementById('ann-modal').classList.remove('open');
+}
+
+// Close modal when tapping overlay background
+document.getElementById('ann-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeAnn();
+});
+
+function showNotif() {
+  openAnn(1);
+}
+
+// ============================================================
+// SERVICE WORKER
+// ============================================================
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
+// ============================================================
+// INIT
+// ============================================================
+setGreeting();
+renderHomeAnnouncements();
+renderSchedule();
+renderGrades();
+renderMessages();
+renderAnnouncements();
+</script>
+</body>
+</html>
